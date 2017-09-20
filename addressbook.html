@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags always come first -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.css">
+  </head>
+  <body>
+    <h1 id="header">My Addressbook</h1>
+	<!-- amended -->
+<br />
+<div id="account_data"></div>
+<div id="hidden_data" style="display: block;"></div>
+
+
+
+</div>
+<div id="wrapper">
+     <div class="row">
+                <div class="col-lg-12">
+                </div>
+                </div>
+      </div>
+</div>
+
+<form class="form-horizontal">
+<fieldset>
+
+<!-- Form Name -->
+<legend>Form Name</legend>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="firstname">Firstname</label>  
+  <div class="col-md-4">
+  <input name="firstname" class="form-control input-md" id="firstname" required="" type="text" placeholder="Enter text">
+    
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput">Second Name</label>  
+  <div class="col-md-4">
+  <input name="lastname" class="form-control input-md" id="lastname" required="" type="text" placeholder="Enter text">
+    
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput">Phone</label>  
+  <div class="col-md-4">
+  <input name="phone" class="form-control input-md" id="phone" required="" type="text" placeholder="Enter text">
+    
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput">Postcode</label>  
+  <div class="col-md-4">
+  <input name="postcode" class="form-control input-md" id="postcode" required="" type="text" placeholder="Enter text">
+    
+  </div>
+</div>
+
+
+<!-- Button -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="singlebutton">Single Button</label>
+  <div class="col-md-4" id="submit_form_button">
+	<button type="button" class="btn btn-primary" onclick="add_entry();">Submit</button>
+  </div>
+</div>
+
+</fieldset>
+</form>
+
+<div id="result_data"></div>
+
+
+    <!-- jQuery first, then Bootstrap JS. -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+	<!-- amended -->
+	<script type="text/javascript">
+	function arrange_account_data(){
+		var acc_data = document.getElementById("hidden_data").innerHTML;
+		var json = JSON.parse(acc_data);
+var html_data = "";
+html_data += "<table border=\"1\" cellspacing=\"2\" cellpadding=\"2\"><tr><th>Account ID</th><th>First Name</th><th>Surname</th><th>Phone</th><th>Postcode</th><th>&nbsp;</th><th>&nbsp;</th><tr>";
+			for(var i = 0; i < json.length; i++) {
+				var obj = json[i];
+				
+					html_data += "<tr><td>" + obj.accountid + "</td>"
+						+ "<td>" + obj.FirstName + "</td>" 
+						+ "<td>" + obj.Surname + "</td>" 
+						+ "<td>" + obj.Phone + "</td>"
+						+ "<td>" + obj.Postcode + "</td>"
+						+ "<td> <button type=\"button\" class=\"btn btn-success\" onclick=\"edit_record('" + obj.accountid + "', '" + obj.FirstName + "','" + obj.Surname + "','" + obj.Phone + "');\">Edit</button></td>"
+						+ "<td> <button type=\"button\" class=\"btn btn-danger\" onclick=\"delete_entry('" + obj.accountid + "');\">Delete</button> </td></tr>";
+ 
+			}
+document.getElementById("account_data").innerHTML = html_data;
+document.getElementById("hidden_data").innerHTML = "";
+	}
+	
+	function get_data(){
+        var get_data = "";
+		var get_accounts = "http://test/functions.php?rq=get_accounts";
+		var xmlHttp = new XMLHttpRequest();
+				xmlHttp.onreadystatechange = function() { 
+					if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+						var get_data = xmlHttp.responseText;
+						console.log(get_data);
+						document.getElementById("hidden_data").innerHTML = get_data;
+						arrange_account_data();
+				}
+				xmlHttp.open("GET", get_accounts, true); // true for asynchronous 
+				xmlHttp.send(null);
+		
+		
+	
+	}
+	
+	
+	
+	
+	window.onload=get_data;
+	</script>
+	
+	<script type="text/javascript">
+	//defineing the function
+	function add_entry() {
+		//defining the varibles and populating it with the value in the form
+		var firstname = document.getElementById("firstname").value;
+		var lastname = document.getElementById("lastname").value;
+	    var phone = document.getElementById("phone").value; 
+	    var postcode = document.getElementById("postcode").value;
+		//defining the url to call with in this xml http request - ajax call
+		var add_account = "http://test/functions.php?rq=add_account&firstname="+firstname + "&lastname=" + lastname + "&phone=" + phone + "&postcode=" + postcode;
+		//AJAX Call - creating an object called xmlhttprequest
+		var xmlHttp = new XMLHttpRequest();
+		//when the state of it is change worked or not worked
+				xmlHttp.onreadystatechange = function() { 
+				//200 means its worked
+					if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+					//get the value of the response
+						var result_data = xmlHttp.responseText;
+						//alert(get_data);
+			       console.log("get_data=" + get_data);	
+                                                            document.getElementById("result_data").innerHTML = result_data;
+															get_data();
+															arrange_account_data();
+															
+											
+															
+				}
+				//this is actioning the request xmlhttp request
+				xmlHttp.open("GET", add_account, true); // true for asynchronous 
+				xmlHttp.send(null);
+	}
+	
+
+	function update_entry(accountid) {
+		//defining the varibles and populating it with the value in the form
+		var firstname = document.getElementById("firstname").value;
+		var lastname = document.getElementById("lastname").value;
+	    var phone = document.getElementById("phone").value; 
+	    var postcode = document.getElementById("postcode").value;
+		//defining the url to call with in this xml http request - ajax call
+		var update_account = "http://test/functions.php?rq=update_account&accountid="+accountid+"& firstname="+firstname + "&lastname=" + lastname + "&phone=" + phone + "$postcode" + postcode;
+		//AJAX Call - creating an object called xmlhttprequest
+		var xmlHttp = new XMLHttpRequest();
+		//when the state of it is change worked or not worked
+				xmlHttp.onreadystatechange = function() { 
+				//200 means its worked
+					if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+					//get the value of the response
+						var result_data = xmlHttp.responseText;
+						//alert(get_data);
+			       console.log("get_data=" + get_data);	
+                                                            document.getElementById("result_data").innerHTML = result_data;
+															get_data();
+															arrange_account_data();
+															
+											
+															
+				}
+				//this is actioning the request xmlhttp request
+				xmlHttp.open("GET", update_account, true); // true for asynchronous 
+				xmlHttp.send(null);
+	}
+
+//step 1 - creating the delete function with account id
+	function delete_entry(accountid) {
+				
+				//step 2 -- define the url and look below
+				var url="http://test/functions.php?rq=del_account&accountid=" + accountid;
+				//defining the xml http request - ajax call
+				//creating the xml http object request
+				var xmlHttp = new XMLHttpRequest();
+				//listen for when that call happens
+				xmlHttp.onreadystatechange = function() { 
+					if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+						//step 4 ---this is the result after its worked
+						var get_data = xmlHttp.responseText;
+						console.log(get_data);
+						//step 5 --- green box to show it wokred
+						document.getElementById("result_data").innerHTML = get_data;
+						//step 6 ---once the result happens you need to get the data and table refresh
+						get_data();
+						arrange_account_data();
+				}
+				//step 3 ---the url will run here
+				xmlHttp.open("GET", url, true); // true for asynchronous 
+				xmlHttp.send(null);
+	}	
+//step 1 - creating the delete function with account id
+	function edit_record(accountid, FirstName, Secondname, phone) {
+		//the elements in the form by ID
+	document.getElementById("firstname").value=FirstName;
+	document.getElementById("lastname").value=Secondname;
+	document.getElementById("phone").value=phone;		
+
+	document.getElementById("submit_form_button").innerHTML = '<button type="button" class="btn btn-info" onclick="update_entry(\'' + accountid + '\');">Update</button>';
+
+				
+}
+
+
+
+
+
+
+
+
+
+
+	
+	
+	</script>
+
+  </body>
+</html>
