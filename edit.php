@@ -11,3 +11,4 @@ function edit_record($conn, $db, $firstname, $lastname, $phone) {
 $conn->close();
 
 }
+22
